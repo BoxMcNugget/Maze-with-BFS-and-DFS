@@ -61,7 +61,7 @@ public class MazeApp {
         //
         // Sets all the nodes to open
         //
-        private void initializeMaze() {
+        public void initializeMaze() {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     // set the space for every row and every column to " " or an empty space in other words
@@ -73,7 +73,7 @@ public class MazeApp {
             for (int i = 0; i < rows; i++) {
                 // and for every column in every row
                 for (int j = 0; j < cols; j++) {
-                    // link that node to its surrounding nodes
+                    // link that node to its surrounding nodes if its not outside the linked lists
                     if (i > 0) grid[i][j].up = grid[i-1][j];
                     if (i < rows - 1) grid[i][j].down = grid[i+1][j];
                     if (j > 0) grid[i][j].left = grid[i][j-1];
@@ -139,23 +139,56 @@ public class MazeApp {
         //
         // checks if a node is a valid position 
         //
-        private boolean isValidPosition(int row, int col) {
+        public boolean isValidPosition(int row, int col) {
+            // if the position is on the board return true else return false
             if (row >= 0 && row < rows && col >= 0 && col < cols)
                 return true;
             else 
                 return false;
         }
 
-        private List<Node> getNeighbors(Node node) {
+        //
+        // returns a list of nodes next to the input parameter node
+        //
+        public List<Node> getNeighbors(Node node) {
+            // instantiating a new list of nodes
             List<Node> neighbors = new ArrayList<>();
+
+            // check if the surrounding nodes are not null and empty
+            // if they are add it to the list of nodes
             if (node.up != null && node.up.value == " ") neighbors.add(node.up);
             if (node.down != null && node.down.value == " ") neighbors.add(node.down);
             if (node.left != null && node.left.value == " ") neighbors.add(node.left);
             if (node.right != null && node.right.value == " ") neighbors.add(node.right);
+            //return the list
             return neighbors;
         }
 
+        public void printMaze() {
+            //for every row
+            for (int i = 0; i < rows; i++) {
+                // and for every column
+                for (int j = 0; j < cols; j++) {
+                    // if node is the start node print an 's' for start
+                    if (grid[i][j].isStart) {
+                        System.out.print("S ");
+                    } 
+                    // if the node is the end node print an 'e' fr the end
+                    else if (grid[i][j].isEnd) {
+                        System.out.print("E ");
+                    } 
+                    // else print the value of that node
+                    else {
+                        System.out.print(grid[i][j].value + " ");
+                    }
+                }
+                System.out.println();
+            }
+        }
+        
+        //
         // BFS Algorithm
+        //
         public List<int[]> bfs() {
             if (start == null || end == null) return null;
 
@@ -187,7 +220,9 @@ public class MazeApp {
             return path;
         }
 
+        //
         // DFS Algorithm
+        //
         public List<int[]> dfs() {
             if (start == null || end == null) return null;
 
@@ -208,6 +243,8 @@ public class MazeApp {
                 }
             }
 
+            
+
             // Reconstruct the path as coordinates
             List<int[]> path = new ArrayList<>();
             Node step = end;
@@ -218,44 +255,35 @@ public class MazeApp {
             Collections.reverse(path);
             return path;
         }
-
-        private int getRow(Node node) {
+                
+        //
+        // getter to return the row coordinate for the search algorithms
+        //
+        public int getRow(Node node) {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     if (grid[i][j] == node) return i;
                 }
             }
-            return -1; // Should not reach here if node is valid
+            return 0;
         }
 
-        private int getCol(Node node) {
+        //
+        // getter to return the column coordinate for the search algorithms
+        // 
+        public int getCol(Node node) {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     if (grid[i][j] == node) return j;
                 }
             }
-            return -1; // Should not reach here if node is valid
-        }
-
-        public void printMaze() {
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    if (grid[i][j].isStart) {
-                        System.out.print("S "); // Start
-                    } else if (grid[i][j].isEnd) {
-                        System.out.print("E "); // End
-                    } else {
-                        System.out.print(grid[i][j].value + " ");
-                    }
-                }
-                System.out.println();
-            }
+            return 0;
         }
     }
 
     // Main class to test the maze implementation
     public static void main(String[] args) {
-        Maze maze = new Maze(10, 10); // Create a 8x8 maze
+        Maze maze = new Maze(10, 10); // Create a 10x10 maze
 
         maze.setWall(0, 0);
         maze.setWall(0, 1);
