@@ -147,23 +147,6 @@ public class MazeApp {
                 return false;
         }
 
-        //
-        // returns a list of nodes next to the input parameter node
-        //
-        public List<Node> getNeighbors(Node node) {
-            // instantiating a new list of nodes
-            List<Node> neighbors = new ArrayList<>();
-
-            // check if the surrounding nodes are not null and empty
-            // if they are add it to the list of nodes
-            if (node.up != null && node.up.value == " ") neighbors.add(node.up);
-            if (node.down != null && node.down.value == " ") neighbors.add(node.down);
-            if (node.left != null && node.left.value == " ") neighbors.add(node.left);
-            if (node.right != null && node.right.value == " ") neighbors.add(node.right);
-            //return the list
-            return neighbors;
-        }
-
         public void printMaze() {
             //for every row
             for (int i = 0; i < rows; i++) {
@@ -185,13 +168,11 @@ public class MazeApp {
                 System.out.println();
             }
         }
-        
         //
+        // HAD HELP FROM CHATGPT TO IMPLEMENT THE SEARCH ALGORITHMS IN JAVA
         // BFS Algorithm
         //
         public List<int[]> bfs() {
-            if (start == null || end == null) return null;
-
             Queue<Node> queue = new LinkedList<>();
             Map<Node, Node> cameFrom = new HashMap<>();
             queue.add(start);
@@ -199,7 +180,8 @@ public class MazeApp {
 
             while (!queue.isEmpty()) {
                 Node current = queue.poll();
-                if (current == end) break;
+                if (current == end) 
+                    break;
 
                 for (Node neighbor : getNeighbors(current)) {
                     if (!cameFrom.containsKey(neighbor)) {
@@ -209,18 +191,26 @@ public class MazeApp {
                 }
             }
 
-            // Reconstruct the path as coordinates
+            //
+            // Reconstruct the path as coordinates in the double linked list
+            //
             List<int[]> path = new ArrayList<>();
+            // start at the end
             Node step = end;
+            // while there is still a node it came from
             while (step != null) {
+                // add that nodes array of ints which are the coordinates into the list of array's
                 path.add(new int[] {getRow(step), getCol(step)});
+                // set step equal to previous spot and work backwards
                 step = cameFrom.get(step);
             }
+            // reverses the list of arrays to display the path in the correct order from start to finish
             Collections.reverse(path);
             return path;
         }
 
         //
+        // HAD HELP FROM CHATGPT TO IMPLEMENT THE SEARCH ALGORITHMS IN JAVA
         // DFS Algorithm
         //
         public List<int[]> dfs() {
@@ -231,29 +221,58 @@ public class MazeApp {
             stack.add(start);
             cameFrom.put(start, null);
 
+            // while the stack is not empty
             while (!stack.isEmpty()) {
+                // pop the current node off the stack or break if its the end node
                 Node current = stack.pop();
-                if (current == end) break;
+                if (current == end) 
+                    break;
 
                 for (Node neighbor : getNeighbors(current)) {
+                    // if the neighbor is not the one it just came from and the node is a neighbor
                     if (!cameFrom.containsKey(neighbor)) {
+                        // add that neighbor to the stack 
                         stack.add(neighbor);
+                        // add the current node as a node in the hashmap
                         cameFrom.put(neighbor, current);
                     }
                 }
             }
 
             
-
-            // Reconstruct the path as coordinates
+            //
+            // Reconstruct the path as coordinates in the double linked list
+            //
             List<int[]> path = new ArrayList<>();
+            // start at the end
             Node step = end;
+            // while there is still a node it came from
             while (step != null) {
+                // add that nodes array of ints which are the coordinates into the list of array's
                 path.add(new int[] {getRow(step), getCol(step)});
+                // set step equal to previous spot and work backwards
                 step = cameFrom.get(step);
             }
+            // reverses the list of arrays to display the path in the correct order from start to finish
             Collections.reverse(path);
             return path;
+        }
+        
+        //
+        // returns a list of nodes next to the input parameter node
+        //
+        public List<Node> getNeighbors(Node node) {
+            // instantiating a new list of nodes
+            List<Node> neighbors = new ArrayList<>();
+
+            // check if the surrounding nodes are not null and empty
+            // if they are add it to the list of nodes
+            if (node.up != null && node.up.value == " ") neighbors.add(node.up);
+            if (node.down != null && node.down.value == " ") neighbors.add(node.down);
+            if (node.left != null && node.left.value == " ") neighbors.add(node.left);
+            if (node.right != null && node.right.value == " ") neighbors.add(node.right);
+            //return the list
+            return neighbors;
         }
                 
         //
@@ -283,8 +302,14 @@ public class MazeApp {
 
     // Main class to test the maze implementation
     public static void main(String[] args) {
-        Maze maze = new Maze(10, 10); // Create a 10x10 maze
+        //
+        // create a maze that is a 10 x 10 
+        //
+        Maze maze = new Maze(10, 10); 
 
+        //
+        // Creating a border / wall around the entire maze
+        //
         maze.setWall(0, 0);
         maze.setWall(0, 1);
         maze.setWall(0, 2);
@@ -322,7 +347,9 @@ public class MazeApp {
         maze.setWall(9, 8);
         maze.setWall(9, 9);
 
-        // Set some walls
+        //
+        // Creating the walls inside the maze
+        //
         maze.setWall(1, 5);
         maze.setWall(1, 7);
         maze.setWall(2, 2);
@@ -348,8 +375,8 @@ public class MazeApp {
         maze.setWall(8, 7);
 
         // Set start and end positions
-        maze.setStart(1, 2);  // Start at top-left corner
-        maze.setEnd(8, 6);    // End at bottom-right corner
+        maze.setStart(1, 2);
+        maze.setEnd(8, 6);
 
         // Print the maze
         maze.printMaze();
@@ -359,14 +386,14 @@ public class MazeApp {
         List<int[]> dfsPath = maze.dfs();
 
         // Print BFS Path
-        System.out.println("BFS Path:");
+        System.out.println("\nBFS Path:");
         for (int[] coord : bfsPath) {
             System.out.print(Arrays.toString(coord) + " ");
         }
         System.out.println();
 
         // Print DFS Path
-        System.out.println("DFS Path:");
+        System.out.println("\nDFS Path:");
         for (int[] coord : dfsPath) {
             System.out.print(Arrays.toString(coord) + " ");
         }
